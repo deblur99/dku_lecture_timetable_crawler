@@ -221,7 +221,7 @@ def search_by_additional_items(driver, items):
     
     return None
 
-def search_by_class_name(driver, classname):
+def search_by_class_name(driver, item):
     xpath = "//input[@id='mjSubjKnm']"
-    driver.find_element_by_xpath(xpath).send_keys(classname)
+    driver.find_element_by_xpath(xpath).send_keys(item)
     return

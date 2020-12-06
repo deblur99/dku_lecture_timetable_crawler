@@ -21,7 +21,9 @@ def write_csv(lists):
                     for proc in psutil.process_iter(attrs=['name']):
                         if proc.info['name'] == 'EXCEL.EXE':         # 엑셀 프로그램이 현재 실행중인지 검사 
                             os.system('taskkill /f /im EXCEL.EXE')   # 실행중이라면 프로그램 강제 종료
-                            time.sleep(0.001)                        # 1ms 동안 대기 -> 곧바로 파일을 삭제하면 오류 발생
+                            time.sleep(0.005)                        # 1ms 동안 대기 -> 곧바로 파일을 삭제하면 오류 발생
+                            os.system('taskkill /f /im EXCEL.EXE')
+                            time.sleep(0.005)
                     os.remove(filename)
                     break
                 elif decision == '2':   # 함수 종료
