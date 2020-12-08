@@ -20,7 +20,7 @@ driver = search_module.open_window()
 search_module.select_search_condition(driver, got_conditions)
 
 # 검색 후 검색 결과 가져와 result 변수에 저장
-result = search_module.get_search_result(driver)
+result = search_module.get_search_result(driver, got_conditions[0][-1])
 
 # GUI에 검색 결과 보내기
 # send_lists_GUI(lists)
