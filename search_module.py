@@ -27,7 +27,7 @@ def select_search_condition(driver, args):
     search_by_class_name(driver, args[2])
     return None
 
-def get_search_result(driver):
+def get_search_result(driver, category):
     click_search_button(driver)
-    result = parse_search_result(driver)
+    result = parse_search_result(driver, category)
     return result
