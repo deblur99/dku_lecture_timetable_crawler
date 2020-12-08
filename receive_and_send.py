@@ -26,8 +26,8 @@ def retrieve_from_GUI():
     '''
     
     # 전달받을 변수 search_conditions
-    search_conditions = ['2020', '2학기', '죽전', '전공',
-                    'POSE(Open source)', 'SW융합대학', '소프트웨어학과', '', '', '',
+    search_conditions = ['2020', '2학기', '죽전', '교양',
+                    '', '', '', '', '', '',
                     '']
 
     # search_conditions의 요소를 세 부분으로 분할
