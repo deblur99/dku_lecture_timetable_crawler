@@ -76,7 +76,7 @@ def parse_search_result(driver, category):
         # 4) 학점 및 교강사
         # 학점 부분을 찾으면 되는데 이때는 ( 문자가 포함되어 있는 요소를 찾으면 됨
         slicing_index = search_result.split().index(list_result[4])
-        if list_result[1] == 'POSE(Opensource)' or list_result[1] == 'POSE(English)':
+        if '(' in list_result[1]:
             slicing_index = search_result.split().index(list_result[3])
 
         score_isAppended = False
