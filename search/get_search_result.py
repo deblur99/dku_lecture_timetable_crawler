@@ -59,7 +59,7 @@ def parse_search_result(driver, category):
             index = search_result.split().index(word)
             if word == list_result[1]: # 처음 숫자인 부분은 학년 항목이므로 이를 확인하여 건너뜀        
                 list_result[2] = search_result.split()[index + 1]
-                if search_result.split()[index + 3] == False:
+                if search_result.split()[index + 3].isdigit() == False:
                     full_classname = search_result.split()[index + 2] + ' ' + search_result.split()[index + 3]
                     list_result[3] = full_classname
                     list_result[4] = search_result.split()[index + 4]
@@ -73,7 +73,7 @@ def parse_search_result(driver, category):
         # 학점 부분을 찾으면 되는데 이때는 ( 문자가 포함되어 있는 요소를 찾으면 됨
         slicing_index = search_result.split().index(list_result[4])
         score_isAppended = False
-        for word in search_result.split()[slicing_index:]:
+        for word in search_result.split()[slicing_index + 1:]:
             if '(' in word:
                 list_result[10] = word # 학점
                 score_isAppended = True
@@ -94,8 +94,9 @@ def parse_search_result(driver, category):
         distance_list = ['전체대면', '병행강의', '온라인강의1', '온라인강의2']
         english_list = ['영어A', '영어B']
 
-        if full_classname.split()[0] == search_result.split()[index + 1]:
-            index += 1
+        if full_classname != '':
+            if full_classname.split()[0] == search_result.split()[index + 1]:
+                index += 1
 
         if search_result.split()[index + 3] in distance_list:
             list_result[5] = search_result.split()[index + 3]
@@ -124,48 +125,6 @@ def parse_search_result(driver, category):
                 for item in search_result.split()[index+1:]:
                     list_result[13] += item
             
-        '''
-        except ValueError:
-            full_teachername = ''
-
-            for word in search_result.split():
-                index = search_result.split().index(word)
-                if word == list_result[1]: # 처음 숫자인 부분은 학년 항목이므로 이를 확인하여 건너뜀        
-                    list_result[2] = search_result.split()[index + 1]
-                    if list_result[4].isdigit() == False:
-                        full_classname = search_result.split()[index + 2] + ' ' + search_result.split()[index + 3]
-                        list_result[3] = full_classname
-                        list_result[4] = search_result.split()[index + 4]
-                        break
-                    list_result[3] = search_result.split()[index + 2]
-                    list_result[4] = search_result.split()[index + 3]
-                    break
-        
-        if index < (len(search_result.split()) - 1):
-            if '~' in search_result.split()[index + 1]:
-                list_result[12] = search_result.split()[index + 1]
-        if list_result[12] != '':
-            if (search_result.split().index(list_result[12]) + 1) != len(search_result.split()):
-                if '~' in search_result.split()[index + 2]:
-                    list_result[12] += '\n' + search_result.split()[index + 2]
-                    list_result[12] = list_result[12].strip()
-        '''
-        '''
-        # 7) 변경내역, 수업방법 및 비고
-        if list_result[12] != '':
-            try:
-                index = search_result.split().index(list_result[12])
-            except ValueError:
-                index = search_result.split().index(list_result[12].split('\n')[1])
-        while (index + 1) != len(search_result.split()):
-            list_result[13] += '\n' + search_result.split()[index + 1]
-            index += 1
-
-        list_result[13] = list_result[13].strip()
-
-        if full_classname != '':
-            list_result[3] = full_classname
-        '''
         return_result.append(list_result)
     
     driver.close()

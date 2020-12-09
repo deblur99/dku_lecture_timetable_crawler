@@ -2,7 +2,7 @@ import csv, psutil, os, time
 
 def write_csv(lists):
     # timetable.csv가 있는지 찾기
-    filename = 'dku_lecture_timetable_crawler/' + 'timetable' + '.csv'
+    filename = 'timetable' + '.csv'
 
     # 파일 삭제하기
     # 해당 파일이 존재할 경우 덮어쓰기 시도
