@@ -49,7 +49,8 @@ def parse_search_result(driver, category):
                 index = search_result.split().index(word)
                 word = search_result.split()[index + 1]
                 if word == 'POSE(Open':
-                    word += search_result.split()[index + 2]
+                    search_result = search_result.replace('POSE(Open source', 'POSE(Opensource')
+                    word = search_result.split()[index + 1]
                 list_result[1] = word
                 break
 
@@ -61,8 +62,11 @@ def parse_search_result(driver, category):
                 list_result[2] = search_result.split()[index + 1]
                 if search_result.split()[index + 3].isdigit() == False:
                     full_classname = search_result.split()[index + 2] + ' ' + search_result.split()[index + 3]
-                    list_result[3] = full_classname
-                    list_result[4] = search_result.split()[index + 4]
+                    list_result[3] = full_classname.replace(' ', '')
+                    
+                    search_result = search_result.replace(full_classname, full_classname.replace(' ', ''))
+
+                    list_result[4] = search_result.split()[index + 3]
                     break
             
                 list_result[3] = search_result.split()[index + 2]
@@ -72,6 +76,9 @@ def parse_search_result(driver, category):
         # 4) 학점 및 교강사
         # 학점 부분을 찾으면 되는데 이때는 ( 문자가 포함되어 있는 요소를 찾으면 됨
         slicing_index = search_result.split().index(list_result[4])
+        if list_result[1] == 'POSE(Opensource)' or list_result[1] == 'POSE(English)':
+            slicing_index = search_result.split().index(list_result[3])
+
         score_isAppended = False
         for word in search_result.split()[slicing_index + 1:]:
             if '(' in word:
@@ -112,7 +119,7 @@ def parse_search_result(driver, category):
         # ~문자가 있는 요소면 강의시간이므로 이걸 활용해 요일 자리를 탐색
         time_isFound = False
         for item in search_result.split():
-            if '~' in item:
+            if ('~' in item) and ('[' not in item) and (']' not in item):
                 index = search_result.split().index(item)
                 time_isFound = True
                 break
@@ -123,6 +130,9 @@ def parse_search_result(driver, category):
             
             if len(search_result.split()[index:]) > 1:
                 for item in search_result.split()[index+1:]:
+                    if '~' in item and ('[' not in item) and (']' not in item):
+                        list_result[12] += '\n' + item
+                        continue
                     list_result[13] += item
             
         return_result.append(list_result)
