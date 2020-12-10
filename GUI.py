@@ -252,7 +252,7 @@ class searchOption(QWidget):
         self.dm = QComboBox(self)
         self.dm.addItem('영역')
         self.dm.addItem('공통교양')
-        self.dm.addItem('--글로벌교양')
+        self.dm.addItem('--글로벌역량')
         self.dm.addItem('--자기관리역량')
         self.dm.addItem('--사회봉사교과')
         self.dm.addItem('--종합적사고역량')

@@ -8,6 +8,7 @@ from selenium import webdriver
 from search.set_search_condition import *
 from search.get_search_result import *
 
+
 def open_window():
     '''
     webdriver 클래스의 하위 클래스인 Chrome 클래스로,\n

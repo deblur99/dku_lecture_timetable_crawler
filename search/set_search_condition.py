@@ -94,6 +94,13 @@ def search_by_additional_items(driver, items):
     검색하는 항목: 연도, 학기, 캠퍼스, 과목종류, 교과목명을 제외한 나머지
     (과목영역, 단과대명, 전공명, 요일, 학년, 교강사명)
     '''
+    xpath = "//select[@style='display: none;']"         
+    container = driver.find_elements_by_xpath(xpath)    
+
+    # driver의 메서드 execute_script로 html 태그의 속성인 display=none을 display=block으로 변경
+    for i in container:
+        driver.execute_script("arguments[0].style.display = 'block';", i)
+
     def search_by_section_name(driver, item):
         '''과목 영역 선택하는 부분의 WebElement 객체 찾아 저장'''
 
@@ -214,6 +221,8 @@ def search_by_additional_items(driver, items):
             new_list.append(None)
             continue
         new_list.append(item)
+
+    print(new_list)
 
     # new_list의 요소가 None이 아닌 경우에만 해당 함수 실행
     for i in range(len(new_list)):
