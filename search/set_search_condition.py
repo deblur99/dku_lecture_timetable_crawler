@@ -222,8 +222,6 @@ def search_by_additional_items(driver, items):
             continue
         new_list.append(item)
 
-    print(new_list)
-
     # new_list의 요소가 None이 아닌 경우에만 해당 함수 실행
     for i in range(len(new_list)):
         if new_list[i] != None:
