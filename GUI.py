@@ -1,11 +1,12 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QTableWidget, QTableWidgetItem, QDesktopWidget, QPushButton, QHBoxLayout, QVBoxLayout, QCheckBox, QLabel, QComboBox, QLineEdit, QGridLayout, QCheckBox, QRadioButton, QGroupBox
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
+from PyQt5.QtGui import QStandardItem, QStandardItemModel, qPixelFormatCmyk
 import search_module
 import export_csv
 
-search_result = [[]]
+search_result = []
+save_into_file = []
 
 # 크롤러 메인 함수 정의하는 부분
 def search(got_conditions):
@@ -14,7 +15,7 @@ def search(got_conditions):
     essential_items = got_conditions[:4]
     additional_items = got_conditions[4:len(got_conditions)-1]
     classname = got_conditions[-1]
-
+    
     # 각 항목을 3분할 후, 2차원 리스트 형태로 main.py로 반환
     got_conditions = [essential_items, additional_items, classname]
 
@@ -61,7 +62,7 @@ class searchOption(QWidget):
         '보건복지대학': ['전공명', '공공정책학과', '공공정책학과(야)', '사회복지학과', '해병대군사학과', '환경자원경제학과', '임상병리학과', '물리치료학과', '보건행정학과', '치위생학과', '심리치료학과'], '간호대학': ['전공명', '간호학과'], '치과대학': ['전공명', '치의예과', '치의학과'], 
         '약학대학': ['전공명', '약학과'], '연계전공(학부)': ['전공명', '메디바이오산업기술학연계전공', '토탈분석기기융합학연계전공', '식의약향장학연계전공']}
         
-        #검색 결과에서 선택한 항목을 저장할 빈 리스트 선언 
+        #검색 결과에서 선택한 항목을 저장할 빈 리스트 선언
         self.savedList = []
 
         self.initUI()
@@ -126,8 +127,6 @@ class searchOption(QWidget):
         #searchList에 각각의 조건들을 추가
         self.searchList = [self.inputYear, self.clickedSemester, self.clickedCampus, self.clickedDomain, self.clickedType, 
         self.clickedCollege, self.clickedMajor, self.clickedDay, self.clickedGrade, self.inputTeacher, self.inputSubject]
-        
-        print(self.searchList)
 
         try:
             if self.clickedDomain == '교양':
@@ -500,7 +499,7 @@ class searchResult(QDialog):
         quitbtn.clicked.connect(self.close)
         #저장버튼 생성
         savebtn = QPushButton('파일로 저장', self)
-        savebtn.clicked.connect(self.save)
+        savebtn.clicked.connect(lambda: export_csv.write_csv(save_into_file))
 
         #hbox객체를 생성하여 설명, 뒤로가기버튼, 저장버튼 배치
         hbox = QHBoxLayout()
@@ -539,13 +538,13 @@ class searchResult(QDialog):
     #체크박스 클릭시 체크된 cell의 행을 받아 이에 해당하는 리스트를 결과리스트에 추가
     def ckboxChanged(self):
         self.ckbox = self.sender()
-        self.savedList.append(self.resultList[self.ckbox.get_row()])
-        print(self.savedList)
+        global save_into_file
+        save_into_file.append(self.resultList[self.ckbox.get_row()])
 
     #tablewidget에 data추가
     def setTableData(self):
         #행의 제목을 지정하고 배치
-        columnHeaders = ['학년', '이수구분', '교과목번호', '교과목명', '분반', '1단계', '1.5단계', '2단계', '2.5/3단계', '원어', '학점(설계)', '교강사', '요일/교시/강의실', '수업방법 및 비고']
+        columnHeaders = ['', '학년', '이수구분', '교과목번호', '교과목명', '분반', '1단계', '1.5단계', '2단계', '2.5/3단계', '원어', '학점(설계)', '교강사', '요일/교시/강의실', '수업방법 및 비고']
         self.tableWidget.setHorizontalHeaderLabels(columnHeaders)
 
         #결과사전에서 값을 가져와 각 cell에 배치
@@ -556,9 +555,6 @@ class searchResult(QDialog):
                 self.tableWidget.setItem(row, col + 1, item)
 
         self.tableWidget.resizeColumnsToContents()
-    
-    def save(self):
-        export_csv.write_csv(self.savedList)
 
 #체크박스 생성을 위한 class
 class MyCheckBox(QCheckBox):
@@ -586,5 +582,5 @@ class checkboxItem(QTableWidgetItem):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     #QApplication 객체에서 exec_메서드를 호출해 이벤트 루프 생성
-    ex = searchOption() 
+    ex = searchOption()
     sys.exit(app.exec_())

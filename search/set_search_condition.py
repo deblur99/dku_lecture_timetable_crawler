@@ -96,14 +96,17 @@ def search_by_additional_items(driver, items):
     '''
     def search_by_section_name(driver, item):
         '''과목 영역 선택하는 부분의 WebElement 객체 찾아 저장'''
+
+        if item == '영역':
+            return
+
         xpath = "//select[@id='curiCparCd']/option"
         container = driver.find_elements_by_xpath(xpath)
 
         # 과목 영역 목록을 0부터 대응하여 딕셔너리로 저장
         # 사용자가 과목 영역을 선택하면 그 영역에 대응하는 정수값을 가져와 검색창에 반영
-        index = 1
+        index = 0
         section_with_subject = dict()
-        section_with_subject['영역'] = 0
 
         for section in container:
             section_with_subject[section.text] = index
@@ -160,9 +163,8 @@ def search_by_additional_items(driver, items):
         container = driver.find_elements_by_xpath(xpath)
 
         # 요일 목록을 0부터 대응하여 딕셔너리로 저장
-        index = 1
+        index = 0
         day_list = dict()
-        day_list['요일'] = 0
         for day in container:
             day_list[day.text] = index
             index += 1
@@ -232,7 +234,7 @@ def search_by_additional_items(driver, items):
     return None
 
 def search_by_class_name(driver, item):
-    if item == '교강사명':
+    if item == '교과목명':
         return
 
     xpath = "//input[@id='mjSubjKnm']"
