@@ -2,7 +2,25 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QTableWidget, QTableWidgetItem, QDesktopWidget, QPushButton, QHBoxLayout, QVBoxLayout, QCheckBox, QLabel, QComboBox, QLineEdit, QGridLayout, QCheckBox, QRadioButton, QGroupBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
+import search_module
+import export_csv
 
+search_result = [[]]
+
+# 크롤러 메인 함수 정의하는 부분
+def search(got_conditions):
+    driver = search_module.open_window()
+
+    essential_items = got_conditions[:4]
+    additional_items = got_conditions[4:len(got_conditions)-1]
+    classname = got_conditions[-1]
+
+    # 각 항목을 3분할 후, 2차원 리스트 형태로 main.py로 반환
+    got_conditions = [essential_items, additional_items, classname]
+
+    search_module.select_search_condition(driver, got_conditions)
+    result = search_module.get_search_result(driver, got_conditions[0][-1])
+    return result
 
 #메인 검색창 클래스
 class searchOption(QWidget):
@@ -15,7 +33,7 @@ class searchOption(QWidget):
         #변수 선언 및 기본 값 설정
         self.clickedSemester = '1학기'
         self.clickedCampus = '죽전'
-        self.clickedDomian = '교양'
+        self.clickedDomain = '교양'
         self.clickedType = '영역'
         self.clickedCollege = '단과대명'
         self.clickedMajor = '전공명'
@@ -97,7 +115,6 @@ class searchOption(QWidget):
         searchbtn.clicked.connect(lambda: self.schbtn_clicked(title))
         self.dialog = QDialog()
 
-
         #창 설정
         self.setWindowTitle('timetable')
         self.resize(1000,625)
@@ -107,13 +124,29 @@ class searchOption(QWidget):
     #검색버튼 연결 함수
     def schbtn_clicked(self, title):
         #searchList에 각각의 조건들을 추가
-        self.searchList = [self.inputYear, self.clickedSemester, self.clickedCampus, self.clickedDomian, self.clickedType, 
-        self.clickedCollege, self.clickedMajor, self.inputSubject, self.clickedDay, self.clickedGrade, self.inputTeacher]
+        self.searchList = [self.inputYear, self.clickedSemester, self.clickedCampus, self.clickedDomain, self.clickedType, 
+        self.clickedCollege, self.clickedMajor, self.clickedDay, self.clickedGrade, self.inputTeacher, self.inputSubject]
+        
+        print(self.searchList)
 
+        try:
+            if self.clickedDomain == '교양':
+                pass
+            elif self.clickedCollege == '단과대명' or self.clickedMajor == '전공명':
+                raise ValueError
+            
+            global search_result # 검색 결과 리스트를 저장할 변수는 전역 변수로 참조함
+
+            search_result = search(self.searchList)
+
+        except ValueError or KeyError:
+            print('올바르지 않은 검색 조건입니다.')
+                                        
         #검색결과 창 실행 (새로운 클래스)
         dlg = searchResult()
         dlg.exec_()
     
+
     #연도 위젯
     def year(self):
         #Groupbox로 연도 표현
@@ -307,6 +340,8 @@ class searchOption(QWidget):
     def clgClicked(self, text):
         #clickedCollege에 선택된 학기의 텍스트를 반환하여 저장
         self.clickedCollege = text.currentText()
+        #clickedDomain에 '전공' 저장
+        self.clickedDomain = '전공'
 
     #전공명 combobox와 연결된 함수
     def MJClicked(self, text):
@@ -414,7 +449,10 @@ class searchResult(QDialog):
     def __init__(self):
         super().__init__()
         #__에서 가져온 검색결과리스트
-        self.resultList = [['2', '융합선택', '450170', '실험영화연구', '2', '병행강의', '병행강의', '온라인강의2', '온라인강의2', '', '3(0)', '나호원', '목5~10(체육B205)', ''], 
+        self.resultList = search_result
+        '''
+        검색 결과 리스트 예시
+        [['2', '융합선택', '450170', '실험영화연구', '2', '병행강의', '병행강의', '온라인강의2', '온라인강의2', '', '3(0)', '나호원', '목5~10(체육B205)', ''], 
         ['3', '전공선택', '521220', '고급모바일실험2', '1', '병행강의', '병행강의', '병행강의', '온라인강의2', '영어A', '1(0)', '유시환', '목1~4(국제210)', ''], 
         ['2', '전공필수', '521200', '기초모바일실험2', '1', '전체대면', '전체대면', '전체대면', '온라인강의2', '영어A', '1(0)', '이현우', '금3~6(국제210)', ''], 
         ['3', '전공선택', '521220', '고급모바일 실험2', '1', '병행강의', '병행강의', '병행강의', '온라인강의2', '영어A', '1(0)', '유시환', '목1~4(국제210)', ''], 
@@ -427,7 +465,7 @@ class searchResult(QDialog):
         ['4', '전공선택', '472610', '고급임베디드시스템실험', '3', '병행강의', '병행강의', '병행강의', '온라인강의2', '', '1(0)', '최용근', '목13~16(2공521)', ''], 
         ['4', '전공선택', '472610', '고급임베디드시스템실험', '4', '병행강의', '병행강의', '병행강의', '온라인강의2', '', '1(0)', '최용근', '금1~4(2공521)', ''], 
         ['2', '전공필수', '472570', '디지털논리회로실험', '1', '전체대면', '전체대면', '전체대면', '온라인강의2', '영어B', '1(0)', '최천원', '월15~18(2공421)', '']]
-
+        '''
         #결과 리스트를 사전화함
         self.resultDic = dict()
         for i in range(len(self.resultList)):
@@ -507,7 +545,7 @@ class searchResult(QDialog):
     #tablewidget에 data추가
     def setTableData(self):
         #행의 제목을 지정하고 배치
-        columnHeaders = ['', '학년', '이수구분', '교과목번호', '교과목명', '분반', '1단계', '1.5단계', '2단계', '2.5/3단계', '원어', '학점(설계)', '교강사', '요일/교시/강의실', '수업방법 및 비고']
+        columnHeaders = ['학년', '이수구분', '교과목번호', '교과목명', '분반', '1단계', '1.5단계', '2단계', '2.5/3단계', '원어', '학점(설계)', '교강사', '요일/교시/강의실', '수업방법 및 비고']
         self.tableWidget.setHorizontalHeaderLabels(columnHeaders)
 
         #결과사전에서 값을 가져와 각 cell에 배치
@@ -520,7 +558,7 @@ class searchResult(QDialog):
         self.tableWidget.resizeColumnsToContents()
     
     def save(self):
-        pass
+        export_csv.write_csv(self.savedList)
 
 #체크박스 생성을 위한 class
 class MyCheckBox(QCheckBox):
@@ -546,7 +584,7 @@ class checkboxItem(QTableWidgetItem):
         self.setData(Qt.UserRole, value)
 
 if __name__ == '__main__':
-    #QApplication 객체에서 exec_메서드를 호출해 이벤트 루프 생성
     app = QApplication(sys.argv)
-    ex = searchOption()
+    #QApplication 객체에서 exec_메서드를 호출해 이벤트 루프 생성
+    ex = searchOption() 
     sys.exit(app.exec_())

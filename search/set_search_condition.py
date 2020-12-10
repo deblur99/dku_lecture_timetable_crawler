@@ -49,7 +49,7 @@ def search_by_essential_items(driver, items):
     # 사용자로부터 1학기 하계계절 2학기 동계계절 중 하나를 체크박스로 입력받아서 그것에 해당하는
     # 인덱스로 변환 후 리스트에서 해당 WebElement 객체를 참조
     # 0번째부터 4번쨰 순으로, 학기 -> 1학기 -> 하계계절 -> 2학기 -> 동계계절
-    semester_list = {'1학기': 1, '하계계절': 2, '2학기': 3, '동계계절': 4}
+    semester_list = {'학기': 0, '1학기': 1, '하계계절': 2, '2학기': 3, '동계계절': 4}
 
     # semester 
     semester = items[1]
@@ -63,7 +63,7 @@ def search_by_essential_items(driver, items):
     container = driver.find_elements_by_xpath(xpath)
 
     # 사용자가 캠퍼스를 선택하면 그 선택값을 검색창에 반영
-    campus_list = {'죽전': 1, '천안': 2}
+    campus_list = {'캠퍼스': 0, '죽전': 1, '천안': 2}
 
     campus = items[2]
     container[campus_list[campus]].click()
@@ -92,7 +92,7 @@ def search_by_additional_items(driver, items):
     '''
     검색에 필요한 부가적인 항목을 지정하는 함수\n
     검색하는 항목: 연도, 학기, 캠퍼스, 과목종류, 교과목명을 제외한 나머지
-    (과목영역, 단과대명, 전공명, 교강사명, 요일, 학년)
+    (과목영역, 단과대명, 전공명, 요일, 학년, 교강사명)
     '''
     def search_by_section_name(driver, item):
         '''과목 영역 선택하는 부분의 WebElement 객체 찾아 저장'''
@@ -101,8 +101,9 @@ def search_by_additional_items(driver, items):
 
         # 과목 영역 목록을 0부터 대응하여 딕셔너리로 저장
         # 사용자가 과목 영역을 선택하면 그 영역에 대응하는 정수값을 가져와 검색창에 반영
-        index = 0
+        index = 1
         section_with_subject = dict()
+        section_with_subject['영역'] = 0
 
         for section in container:
             section_with_subject[section.text] = index
@@ -159,8 +160,9 @@ def search_by_additional_items(driver, items):
         container = driver.find_elements_by_xpath(xpath)
 
         # 요일 목록을 0부터 대응하여 딕셔너리로 저장
-        index = 0
+        index = 1
         day_list = dict()
+        day_list['요일'] = 0
         for day in container:
             day_list[day.text] = index
             index += 1
@@ -174,11 +176,15 @@ def search_by_additional_items(driver, items):
 
     def search_by_grade(driver, item):
         '''학년 선택하는 부분의 WebElement 객체 찾아 저장'''
+
+        if item == '학년':
+            return
+
         xpath = "//select[@id='grade']/option"
         container = driver.find_elements_by_xpath(xpath)
 
         try:
-            container[item].click() # container의 2번째 요소인 '2학년'에 접근하여 클릭한다
+            container[int(item)].click() # container의 2번째 요소인 '2학년'에 접근하여 클릭한다
         except KeyError:
             exception_handler_during_search()
 
@@ -186,6 +192,10 @@ def search_by_additional_items(driver, items):
 
     def search_by_teacher_name(driver, item):
         '''교강사명 입력 부분의 WebElement 객체 찾아 저장'''
+
+        if item == '교강사명':
+            return
+
         xpath = "//input[@id='pfltNm']"
         container = driver.find_element_by_xpath(xpath)
 
@@ -222,6 +232,10 @@ def search_by_additional_items(driver, items):
     return None
 
 def search_by_class_name(driver, item):
+    if item == '교강사명':
+        return
+
     xpath = "//input[@id='mjSubjKnm']"
     driver.find_element_by_xpath(xpath).send_keys(item)
+    
     return
