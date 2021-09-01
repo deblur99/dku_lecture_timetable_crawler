@@ -1,4 +1,6 @@
+from GUI import searchResult
 from selenium import webdriver
+import pandas as pd
 
 def click_search_button(driver):
     '''입력한 검색 조건을 가지고 검색 버튼을 클릭하는 함수'''
@@ -27,7 +29,7 @@ def parse_search_result(driver, category):
         list_result = ['' for x in range(14)]
         '''
         list_result = ['학년', '이수구분', '교과목번호', '교과목명', '분반',
-                        '1단계', '1.5단계', '2단계', '2.5/3단계', '원어',
+                        '1단계', '2단계', '3단계', '4단계', '원어',
                         '학점(설계학점)', '교강사', '요일/교시/강의실', '수업방식 및 비고']
         '''
 
@@ -36,7 +38,7 @@ def parse_search_result(driver, category):
         # 문자열 변환 후 .split()으로 리스트로 변환한다.
         # 변환된 리스트인 search_result는 search_results에 추가하여 2차원 리스트를 만든다.
         search_result = search_result_raw.text.replace('\n', ' ').replace('국문 ', '').replace('ENG ', '')
-        
+
         # 1) 학년 항목부터 문자열을 리스트로 변환
         for word in search_result.split():
             if word.isdigit() == True:
@@ -98,18 +100,24 @@ def parse_search_result(driver, category):
 
         # 5) 거리두기 단계 및 원어강의 여부
         index = search_result.split().index(list_result[2])
-        distance_list = ['전체대면', '병행강의', '온라인강의1', '온라인강의2']
+        distance_list = ['원격수업', '원격강의', '대면수업']
         english_list = ['영어A', '영어B']
+
+        #debug
+        print(search_result)
 
         if full_classname != '':
             if full_classname.split()[0] == search_result.split()[index + 1]:
                 index += 1
 
         if search_result.split()[index + 3] in distance_list:
-            list_result[5] = search_result.split()[index + 3]
-            list_result[6] = search_result.split()[index + 4]
-            list_result[7] = search_result.split()[index + 5]
-            list_result[8] = search_result.split()[index + 6]
+            distance_list = search_result.split()[9:]
+            start_index = 5
+
+            for dist_item in distance_list:
+                list_result[start_index] = dist_item
+                print(dist_item, end=" ")
+                start_index += 1
 
         index = search_result.split().index(list_result[10])
         if search_result.split()[index - 1] in english_list:
@@ -134,9 +142,12 @@ def parse_search_result(driver, category):
                         list_result[12] += '\n' + item
                         continue
                     list_result[13] += item
-            
+
+        #debug
+        print(list_result)
+
         return_result.append(list_result)
-    
+
     driver.close()
 
     return return_result

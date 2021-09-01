@@ -110,6 +110,9 @@ def search_by_additional_items(driver, items):
         xpath = "//select[@id='curiCparCd']/option"
         container = driver.find_elements_by_xpath(xpath)
 
+        # click section
+        #section = 
+
         # 과목 영역 목록을 0부터 대응하여 딕셔너리로 저장
         # 사용자가 과목 영역을 선택하면 그 영역에 대응하는 정수값을 가져와 검색창에 반영
         index = 0

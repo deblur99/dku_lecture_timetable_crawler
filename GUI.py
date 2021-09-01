@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QTableWidget, QTableWidgetItem, QDesktopWidget, QPushButton, QHBoxLayout, QVBoxLayout, QCheckBox, QLabel, QComboBox, QLineEdit, QGridLayout, QCheckBox, QRadioButton, QGroupBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, qPixelFormatCmyk
+import json
 import search_module
 import export_csv
 
@@ -32,13 +33,13 @@ class searchOption(QWidget):
         self.searchList = ['' for i in range(11)]
 
         #변수 선언 및 기본 값 설정
-        self.clickedSemester = '1학기'
+        self.clickedSemester = '2학기'
         self.clickedCampus = '죽전'
         self.clickedDomain = '교양'
         self.clickedType = '영역'
         self.clickedCollege = '단과대명'
         self.clickedMajor = '전공명'
-        self.inputYear = '2020'
+        self.inputYear = '2021'
         self.inputSubject = '교과목명'
         self.clickedDay = '요일'
         self.clickedGrade = '학년'
@@ -174,10 +175,8 @@ class searchOption(QWidget):
         groupbox = QGroupBox('학기')
 
         #학기의 각 항목들을 RadioButton으로 생성
-        self.sem1 = QRadioButton('1학기')
-        #기본으로 1학기 버튼이 선택되어있게 설정
-        self.sem1.setChecked(True)
         #각 버튼이 선택되었을 때 함수 연결
+        self.sem1 = QRadioButton('1학기')
         self.sem1.clicked.connect(self.semesterClicked)
         self.sem2 = QRadioButton('여름학기')
         self.sem2.clicked.connect(self.semesterClicked)
@@ -185,6 +184,9 @@ class searchOption(QWidget):
         self.sem3.clicked.connect(self.semesterClicked)
         self.sem4 = QRadioButton('겨울학기')
         self.sem4.clicked.connect(self.semesterClicked)
+
+        #기본으로 1학기 버튼이 선택되어있게 설정
+        self.sem3.setChecked(True)
 
         #hbox객체를 생성하여 groupbox내에서 각 버튼 배치
         hbox = QHBoxLayout()
@@ -252,7 +254,6 @@ class searchOption(QWidget):
         self.dm = QComboBox(self)
         self.dm.addItem('영역')
         self.dm.addItem('공통교양')
-        self.dm.addItem('--글로벌역량')
         self.dm.addItem('--자기관리역량')
         self.dm.addItem('--사회봉사교과')
         self.dm.addItem('--종합적사고역량')
@@ -261,7 +262,7 @@ class searchOption(QWidget):
         self.dm.addItem('--세계시민역량')
         self.dm.addItem('--자연/환경/기술')
         self.dm.addItem('--문학/역사/철학')
-        self.dm.addItem('--정치/경제/사회·심리')
+        self.dm.addItem('--정치/경제/사회･심리')
         self.dm.addItem('--수학/물리/화학/생물')
         self.dm.addItem('--문화/예술/체육')
         self.dm.addItem('평생교육사(필수)')
@@ -544,7 +545,7 @@ class searchResult(QDialog):
     #tablewidget에 data추가
     def setTableData(self):
         #행의 제목을 지정하고 배치
-        columnHeaders = ['', '학년', '이수구분', '교과목번호', '교과목명', '분반', '1단계', '1.5단계', '2단계', '2.5/3단계', '원어', '학점(설계)', '교강사', '요일/교시/강의실', '수업방법 및 비고']
+        columnHeaders = ['', '학년', '이수구분', '교과목번호', '교과목명', '분반', '1단계', '2단계', '3단계', '4단계', '원어', '학점(설계)', '교강사', '요일/교시/강의실', '수업방법 및 비고']
         self.tableWidget.setHorizontalHeaderLabels(columnHeaders)
 
         #결과사전에서 값을 가져와 각 cell에 배치
